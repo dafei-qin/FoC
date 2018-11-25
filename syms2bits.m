@@ -15,7 +15,24 @@ function data = syms2bits(stream, bits, key, encodeParam)
         end
 
     end
-
+    if encodeParam == 1
+        for i=1:length(stream)
+            stream(i) = judge2d(stream(i), bits, 1);
+        end
+        stream = stream';
+        tempMatrix = zeros(length(stream), bits);
+        for i=1:bits
+            tempMatrix(:, i) = floor(stream ./ 2^(bits - i));
+            stream = stream - floor(stream ./ 2^(bits - i)) * 2^(bits - i);
+        end
+        data = zeros(1, length(stream) * bits);
+        for i=1:size(tempMatrix, 1)
+            for j=1:size(tempMatrix, 2)
+                data((i - 1) * bits + j) = tempMatrix(i, j);
+            end
+        end
+        return;
+    end
     data = viterbiGeneral(out0, poly_m(encodeParam), 1, 1, bits, 2);
 
     if key

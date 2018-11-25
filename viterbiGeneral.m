@@ -33,7 +33,7 @@ function out = viterbiGeneral(in, poly,  hard, notail, batch, dim)
             %if dim == 1
             %    [~, preDis(ii, :)] = decide1D(batch, in(ii, i - 1), sigma, false);
             %else
-                preDis(ii, :) = judge2d([real(in(ii, i - 1)), imag(in(ii, i - 1))], batch, 1, false);
+                preDis(ii, :) = judge2d([real(in(ii, i - 1)), imag(in(ii, i - 1))], batch, false);
             %end
         end
             
@@ -64,7 +64,7 @@ function out = viterbiGeneral(in, poly,  hard, notail, batch, dim)
                         if dim == 1
                             [near, ~] = decide1D(batch, in(ii, i - 1), sigma, false);
                         else
-                            near = judge2d([real(in(ii, i - 1)), imag(in(ii, i - 1))], batch, 1, true);
+                            near = judge2d([real(in(ii, i - 1)), imag(in(ii, i - 1))], batch,true);
                         end
                         near = toArr(near, batch);
                         tmp = tmp + sum(abs(near - toArr(supposed(ii), batch)));

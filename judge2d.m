@@ -1,4 +1,4 @@
-function out = judge2d(inputV, bits, isEqDst, isHard)
+function out = judge2d(inputV, bits, isHard)
     % 对接受到的二维电平进行判决
     % inputV = 接受到的二维电平
     % bits = 比特数，2 = 四电平分布， 3 = 八电平分布

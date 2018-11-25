@@ -25,7 +25,6 @@ function out = generate2d(symbol, bits)
         V = {[3, 3] ./ sqrt(10), [3, 1] ./ sqrt(10), [3, -1] ./ sqrt(10), [3, -3] ./ sqrt(10), [1, -3] ./ sqrt(10), [-1, -3] ./ sqrt(10), [-3, -3] ./ sqrt(10), [-3, -1] ./ sqrt(10), [-3, 1] ./ sqrt(10), [-3, 3] ./ sqrt(10), [-1, 3] ./ sqrt(10), [1, 3] ./ sqrt(10), [1, 1] ./ sqrt(10), [1, -1] ./ sqrt(10), [-1, -1] ./ sqrt(10), [-1, 1] ./ sqrt(10)};
     end
 
-
     out = V{symbol + 1};
     out = out(1) + 1j * out(2);
 end
