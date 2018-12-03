@@ -31,7 +31,7 @@ function out1 = channel(data, psnr, para)
             %tmp = viterbiGeneral(out1, poly, hard, notail, batch, dim);
             %y(i, idx, :) = tmp(1: size(y, 3));
         end
-        PSNR % 显示进度
+        %PSNR % 显示进度
     end
 
 end

@@ -1,9 +1,10 @@
 %WaveChannel.m
-function [out] = WaveChannel(sstream,M,ENR)
+function [out] = WaveChannel(sstream,M,m,ENR)
     %%%%%%%%%%
     %parameter
     %sstream: input complex symbol stream
-    %M : modeling rate (1=BPSK,2=4QAM,3=8PSK)
+    %M : modeling bits per symbol (1=BPSK,2=4QAM,3=8PSK)
+    %m : inversed coding rate of convoluntion code m=1,2,3 => Rc=(1,1/2,1/3)
     %ENR: Eb/n0(dB num). For noise-free case, omit this parameter or input inf
     %output
     %out: received symbol stream
@@ -15,17 +16,17 @@ function [out] = WaveChannel(sstream,M,ENR)
     %%%%%%%%%%
     %must use row vector
     %%%%%%%%%%
-    if(nargin<3 || ENR==inf)
+    Rc = 1/m;
+    if(ENR==inf)
         n0 = 0;
     else
-        n0 = 10^(-ENR/10);
+        n0 = 10^(-ENR/10)/Rc;
     end
-    Eb = 1;
-
+    Eb = 1;%coded bit energy (not info bit!)
     fs = 1;%采样率归一化 33300Hz
     f_real = 33300;
     fc = 1/18;
-    Rs = 1/20/M;
+    Rs = 1/20/M/Rc;
     Ts = 1/Rs;
     [tt,omg,FT,IFT] = prefourier([-10*Ts,10*Ts],20*Ts*fs,[-2*pi*Rs,2*pi*Rs],1000);%这里的采样率一定要是fs 否则毫无意义
     f = omg/2/pi;
@@ -48,8 +49,7 @@ function [out] = WaveChannel(sstream,M,ENR)
     t = [1:wlen]/fs;
 
     %energy modification
-    Ecur = Rs;%理论计算给出的Es值(实带通)
-    Sb = sqrt(M*2*Eb/Ecur)*Sb;%修正后的Eb/n0是我们需要的值
+    Sb = sqrt(M*2*Eb/Rs)*Sb;%修正后的Eb/n0是我们需要的值
 
     %figure
 
@@ -107,7 +107,7 @@ function [out] = WaveChannel(sstream,M,ENR)
     %receiver filter & sampling
     %normFactor = 0.5*sqrt(M*2*Eb/Ecur)*fs;
 
-    normFactor = 1/sqrt(M*2*Eb*Ecur)*fs;
+    normFactor = 1/sqrt(M*2*Eb*Rs)*fs;
     h = normFactor * g;
     R = conv(Sbn,h,'same')/fs;
     sampTime = ([0:s_num-1]*Ts*fs) + 10*Ts*fs + 1;

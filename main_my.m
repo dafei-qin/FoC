@@ -15,11 +15,11 @@ Eb = 1; %8dB仿真测试
 
 fs = 1;%采样率归一化 33300Hz
 f_real = 33300;
-M = 3;
+M = 1;
 fc = 1/18;
 Rs = 1/20/M;
 Ts = 1/Rs;
-N = 8001; %number of bits
+N = 8000; %number of bits
 message = randi(2,1,N)-1;
 
 [tt,omg,FT,IFT] = prefourier([-10*Ts,10*Ts],20*Ts*fs,[-2*pi*Rs,2*pi*Rs],1000);%这里的采样率一定要是fs 否则毫无意义
