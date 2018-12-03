@@ -7,7 +7,7 @@ function out = generate2d(symbol, bits)
     end
 
     if bits == 2
-        V = {[1, 1] ./ sqrt(2), [1, -1] ./ sqrt(2), [-1, -1] ./ sqrt(2), [-1, 1] ./ sqrt(2)};
+        V = {[1, 1] ./ sqrt(2), [1, -1] ./ sqrt(2), [-1, 1] ./ sqrt(2), [-1, -1] ./ sqrt(2)};
     end
 
     if bits == 3
