@@ -10,7 +10,7 @@ function out = judge2d(inputV, bits, isHard)
         V = {[-1,0], [1,0]};
     end
     if bits == 2 
-        V = {[1,1]./sqrt(2), [1,-1]./sqrt(2), [-1,-1]./sqrt(2),[-1,1]./sqrt(2)};
+        V = {[1,1]./sqrt(2), [1,-1]./sqrt(2), [-1,1]./sqrt(2),[-1,-1]./sqrt(2)};
     end
     if bits == 3 
         V = {[real(exp(j*5*pi/8)), imag(exp(j*5*pi/8))],
