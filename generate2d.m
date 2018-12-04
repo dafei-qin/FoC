@@ -1,7 +1,7 @@
 function out = generate2d(symbol, bits)
-    % 生成二维带噪信号
-    % symbol: 输入符号
-    % bits: 每电平代表的比特数:
+    % symbol: input logical bits
+    % bits = 1 ->BPSK, bits = 2 ->4QAM, bits = 3 ->8PSK, bits = 4 - > 16QAM
+    % out: output symbols
     if bits == 1
         V = {[-1, 0], [1, 0]};
     end

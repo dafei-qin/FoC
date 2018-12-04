@@ -1,10 +1,9 @@
-function [out,key, aeskey, encryptHeader] = bits2syms(stream, bits, isEncrypt, encodeParam)
+function [out,key] = bits2syms(stream, bits, isEncrypt, encodeParam)
     % [out,key] = bits2syms(stream, bits, isEncrypt, encodeParam)
-    % stream: 输入比特串
-    % bits: 每电平代表的比特数:
+    % stream: input logical
     % bits = 1 ->BPSK, bits = 2 ->4QAM, bits = 3 ->8PSK, bits = 4 - > 16QAM
-    % isEncrypt: 1 -> 加密, 0 -> 不加密
-    % encodeParam: 卷积参数: 1 -> 不卷积, 2 -> 1/2效率, 3 -> 1/3效率
+    % isEncrypt: 1 -> encrypt on, 0 -> encrypt off
+    % encodeParam: conv-params: 1 -> non-conv, 2 -> 1/2 effciency, 3 -> 1/3 effcienct
     len = length(stream);
     lenlog = zeros(1, 13);
     for i=1:13
@@ -15,15 +14,15 @@ function [out,key, aeskey, encryptHeader] = bits2syms(stream, bits, isEncrypt, e
     if isEncrypt
         aeskey = randi(256, 1, 24) - 1;
         header = zeros(1, 240);
+        % generate header for asym encryption
         header(1:192) = bytes2bits(aeskey);
         header(193:192+13) = lenlog;
-
-        init();
-        [kx, ky, key] = genKey();
-        encryptHeader = encode(header, kx, ky);
-        disp('encryptHeader length:');
-        length(encryptHeader)
+        % initialization
+        init(); 
         S = aesinit(aeskey);
+        [kx, ky, key] = genKey(); 
+        encryptHeader = encode(header, kx, ky); 
+        % aligned to 128 bits
         if mod(length(stream), 128) ~= 0
             prolix = 128 - mod(length(stream), 128);
         else
@@ -31,18 +30,18 @@ function [out,key, aeskey, encryptHeader] = bits2syms(stream, bits, isEncrypt, e
         end
         stream = [stream, zeros(1, prolix)];
         encryptStream = zeros(1,length(stream));
+        % aes encryption
         for i=1:(length(stream) / 128)
             encryptStream((i - 1)*128 + 1:i * 128) = bytes2bits(aesencrypt(S, bits2bytes(stream((i - 1)*128 + 1:i*128))));
         end
+        % total encrypted stream
         encryptStream = [encryptHeader, encryptStream];
-        disp('total length after encrypt:');
-        length(encryptStream)
         stream = encryptStream;
     else 
         key = 0;
     end
 
-    if encodeParam == 1 % 不卷积时单独处理
+    if encodeParam == 1 % for non-conv-code
         alignNumber = bits - mod(length(stream), bits);
         if alignNumber ~= bits
             residual = zeros(1, alignNumber);

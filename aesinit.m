@@ -143,37 +143,25 @@ end
 function expkey = key_expansion(key, s_box, rounds, mod_pol, aes_logt, aes_ilogt)
 % Expansion of key
 
-% This is new faster version for all AES:
 rcon = 1;
 kcol = length(key)/4;
 expkey = (reshape(key,4,kcol))';
-% traverse for all rounds
 for i = kcol:(4*(rounds + 1) - 1)
     % copy the previous row of the expanded key into a buffer
     temp = expkey(i, :);
     % each kcol row
     if (mod(i, kcol) == 0)
-        % rotate word
+        % rotate
         temp = temp([2 3 4 1]);
-        % s-box transform
+        % s-box 
         temp = s_box(temp + 1);
         % xor
         temp(1) = bitxor(temp(1), rcon);
-        % new rcon
-        % 1. classic poly_mult
-        % rcon = poly_mult(rcon, 2, mod_pol);
-        % 2. or faster version with log/ilog tables
-        % note rcon is never zero here
-        % rcon = aes_ilogt(mod((aes_logt(rcon + 1) + aes_logt(2 + 1)), 255) + 1);
-        rcon = aes_ilogt(mod((aes_logt(rcon + 1) + 25), 255) + 1);
+        rcon = poly_mult(rcon, 2, mod_pol);
     else
         if ((kcol > 6) && (mod(i, kcol) == 4))
             temp = s_box(temp + 1);
         end
     end
-    % generate new row of the expanded key
     expkey(i + 1, :) = bitxor(expkey(i - kcol + 1, :), temp);
 end
-
-% ------------------------------------------------------------------------
-% end of file
