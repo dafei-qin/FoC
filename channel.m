@@ -1,49 +1,49 @@
 function out1 = channel(data, psnr, para)
-    % para Ã¿ÌõÇúÏßµÄ²ÎÊı½á¹¹Ìå []
-    % psnr±í
-    % data ÊäÈëÊı¾İ
+    % para æ¯æ¡æ›²çº¿çš„å‚æ•°ç»“æ„ä½“ []
+    % psnrè¡¨
+    % data è¾“å…¥æ•°æ®
     y = zeros(size(para, 2), size(psnr, 2), size(data, 2));
     idx = 0;
-    for PSNR = psnr % Ã¶¾ÙĞÅÔë±È
+    for PSNR = psnr % æšä¸¾ä¿¡å™ªæ¯”
         idx = idx + 1;
         for i = 1: size(para, 2)
-            m = para(i).m; % m Ğ§ÂÊ
-            batch = para(i).batch; % 1µçÆ½batch±ÈÌØ
-            dim = para(i).dim; % Î¬¶È
-            hard = (isfield(para(i),'hard') && para(i).hard); % ÊÇ·ñÓ²ÅĞ¾ö Ä¬ÈÏÈíÅĞ¾ö
-            notail = (isfield(para(i),'notail') && para(i).notail); %ÊÇ·ñ²»ÊÕÎ² Ä¬ÈÏÊÕÎ²
+            m = para(i).m; % m æ•ˆç‡
+            batch = para(i).batch; % 1ç”µå¹³batchæ¯”ç‰¹
+            dim = para(i).dim; % ç»´åº¦
+            hard = (isfield(para(i),'hard') && para(i).hard); % æ˜¯å¦ç¡¬åˆ¤å†³ é»˜è®¤è½¯åˆ¤å†³
+            notail = (isfield(para(i),'notail') && para(i).notail); %æ˜¯å¦ä¸æ”¶å°¾ é»˜è®¤æ”¶å°¾
             poly = poly_m(m);
                 out = convCode(data, poly);
                 lout = size(out, 2);
                 l1 = ceil(lout / batch);
                 out = [out, zeros(m, l1 * batch - lout)];
                 out1 = zeros(m, l1);
-                % Éú³É·¢ËÍÂë
+                % ç”Ÿæˆå‘é€ç 
                 for ii = 1: m
                     for j = 1: l1
                         out1(ii, j) = generate2d(toInt(out(ii, (j - 1) * batch + 1: j * batch)'), batch);
                     end
                 end
-                % Í¨¹ıĞÅµÀ
+                % é€šè¿‡ä¿¡é“
             if notail
                 out1 = out1(:, 1: size(out1, 2) - size(poly, 2) + 1);
             end
             %tmp = viterbiGeneral(out1, poly, hard, notail, batch, dim);
             %y(i, idx, :) = tmp(1: size(y, 3));
         end
-        PSNR % ÏÔÊ¾½ø¶È
+        %PSNR % æ˜¾ç¤ºè¿›åº¦
     end
 
 end
 
 
 function out = C1(in, n)
-% ĞÅµÀ
+% ä¿¡é“
     out = sqrt(sum(([in, 0] + normrnd(0, n, 1, 2)).^2));
 end
 
 function out = convCode(in, poly)
-% ´øÊÕÎ²¾í»ı
+% å¸¦æ”¶å°¾å·ç§¯
     out = zeros(size(poly, 1), size(in, 2) + size(poly, 2) - 1);
     for i = 1: size(poly, 1)
         out(i, :) = mod(conv(in, poly(i, :)), 2);
