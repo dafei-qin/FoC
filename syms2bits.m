@@ -33,7 +33,7 @@ function data = syms2bits(stream, bits, key, encodeParam)
         end
         return;
     end
-    data = viterbiGeneral(out0, poly_m(encodeParam), 0, 1, bits, 2);
+    data = viterbiGeneral(out0, poly_m(encodeParam), 1, 1, bits, 2);
 
     if key
         data = decode(data, key);
