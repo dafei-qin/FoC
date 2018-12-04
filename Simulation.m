@@ -38,8 +38,9 @@ for enr = enr_list;
     %[enr err/tot P_theo]
     [enr err/tot]
     
-    if(err/tot<3e-4)
+    
+    ep = max(ep,round(1000/N/(err/tot)))
+    if(ep>80)
         break
     end
-    ep = max(ep,round(1000/N/(err/tot)))
 end
