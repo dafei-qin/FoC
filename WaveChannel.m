@@ -56,7 +56,7 @@ function [out] = WaveChannel(sstream,M,m,ENR)
     %move to carrier 
     I = real(Sb);
     Q = imag(Sb);
-    S = I.*cos(2*pi*fc*t)-Q.*sin(2*pi*fc*t);
+    %S = I.*cos(2*pi*fc*t)-Q.*sin(2*pi*fc*t);
     % %%%%%%%%%绘制：发射波形
     % subplot(2,2,1), hold on, grid on
     % plot(t/f_real,S);%转实际频率
@@ -82,9 +82,8 @@ function [out] = WaveChannel(sstream,M,m,ENR)
     n1 = sqrt(n0*fs);%理论计算给出的噪声值
     Qn = Q + randn(1,length(t))*n1;
     In = I + randn(1,length(t))*n1;
-    Sn = In.*cos(2*pi*fc*t)-Qn.*sin(2*pi*fc*t);
+    %Sn = In.*cos(2*pi*fc*t)-Qn.*sin(2*pi*fc*t);
     Sbn = In + j*Qn;
-    % %plot(t,Sn)
     % subplot(2,2,2), hold on, grid on
     % plot(t/f_real,Sn);%转实际频率
     % xlabel('t/sec')
@@ -92,9 +91,9 @@ function [out] = WaveChannel(sstream,M,m,ENR)
     % title('Noisy signal time domain waveform')
     % set(gca,'XLim',[1,1.01])
 
-    %%%%%%%%%%%绘制：接收功率谱
-    Fsn = conv(abs(fft(Sn)/(length(Sn))).^2,ones(1,500)/500,'same');
-    Fsn = fftshift(Fsn);
+    % %%%%%%%%%%%绘制：接收功率谱
+    % Fsn = conv(abs(fft(Sn)/(length(Sn))).^2,ones(1,500)/500,'same');
+    % Fsn = fftshift(Fsn);
     % subplot(2,2,4), hold on, grid on
     % plot(ff*f_real,Fsn*f_real);%归一化频率转实际频率（功率不变）
     % xlabel('f/Hz')

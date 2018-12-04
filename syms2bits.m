@@ -39,6 +39,7 @@ function [data, aeskey, encryptHeader, dataAfterVbi] = syms2bits(stream, bits, k
     for i=1:13
         M(i) = 2^(13 - i);
     end
+
     if key
         encryptHeader = data(1:514);
         encryptData = data(515:end);
