@@ -1,4 +1,4 @@
-function data = syms2bits(stream, bits, key, encodeParam)
+function [data, aeskey, encryptHeader, dataAfterVbi] = syms2bits(stream, bits, key, encodeParam)
     % data = syms2bits(stream, bits, key, encodeParam)
     % stream: 输入比特串
     % bits: 每电平代表的比特数:
@@ -31,12 +31,31 @@ function data = syms2bits(stream, bits, key, encodeParam)
                 data((i - 1) * bits + j) = tempMatrix(i, j);
             end
         end
-        return;
+    else
+        data = viterbiGeneral(out0, poly_m(encodeParam), 1, 1, bits, 2);
+        dataAfterVbi = data;
     end
-    data = viterbiGeneral(out0, poly_m(encodeParam), 1, 1, bits, 2);
-
+    M = zeros(13, 1);
+    for i=1:13
+        M(i) = 2^(13 - i);
+    end
     if key
-        data = decode(data, key);
+        encryptHeader = data(1:514);
+        encryptData = data(515:end);
+
+        header = decode(encryptHeader, key);
+        aeskey = header(1:192);
+        len = header(193:192+13);
+        aeskey = bits2bytes(aeskey);
+        len = len * M;
+        data = zeros(1, length(encryptData));
+        S = aesinit(aeskey);
+        %firstblock = bytes2bits(aesdecrypt(S, bits2bytes(encryptData(1:128))));
+
+        for i=1:(length(encryptData) / 128)
+            data((i - 1)*128 + 1:i * 128) = bytes2bits(aesdecrypt(S, bits2bytes(encryptData((i - 1)*128 + 1:i*128))));
+        end
+        data = data(1:len);
     end
 
     %data = data(1:end-3);

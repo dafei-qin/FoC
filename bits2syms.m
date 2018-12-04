@@ -1,23 +1,47 @@
-function [out,key] = bits2syms(stream, bits, isEncrypt, encodeParam)
+function [out,key, aeskey, encryptHeader] = bits2syms(stream, bits, isEncrypt, encodeParam)
     % [out,key] = bits2syms(stream, bits, isEncrypt, encodeParam)
     % stream: 输入比特串
     % bits: 每电平代表的比特数:
     % bits = 1 ->BPSK, bits = 2 ->4QAM, bits = 3 ->8PSK, bits = 4 - > 16QAM
     % isEncrypt: 1 -> 加密, 0 -> 不加密
     % encodeParam: 卷积参数: 1 -> 不卷积, 2 -> 1/2效率, 3 -> 1/3效率
+    len = length(stream);
+    lenlog = zeros(1, 13);
+    for i=1:13
+        lenlog(i) = floor(len / 2^(13 - i));
+        len = len - floor(len / 2^(13 - i)) * 2^(13 - i);
+    end
+    % stream = [lenlog, stream];
     if isEncrypt
-        if round(length(stream) / 240) ~= length(stream) / 240
-            disp('length of stream must be a multiple of 240')
-            out = 0;
-            key = 0;
-            return 
-        end
+        aeskey = randi(256, 1, 24) - 1;
+        header = zeros(1, 240);
+        header(1:192) = bytes2bits(aeskey);
+        header(193:192+13) = lenlog;
+
         init();
         [kx, ky, key] = genKey();
-        stream = encode(stream, kx, ky);
+        encryptHeader = encode(header, kx, ky);
+        disp('encryptHeader length:');
+        length(encryptHeader)
+        S = aesinit(aeskey);
+        if mod(length(stream), 128) ~= 0
+            prolix = 128 - mod(length(stream), 128);
+        else
+            prolix = 0;
+        end
+        stream = [stream, zeros(1, prolix)];
+        encryptStream = zeros(1,length(stream));
+        for i=1:(length(stream) / 128)
+            encryptStream((i - 1)*128 + 1:i * 128) = bytes2bits(aesencrypt(S, bits2bytes(stream((i - 1)*128 + 1:i*128))));
+        end
+        encryptStream = [encryptHeader, encryptStream];
+        disp('total length after encrypt:');
+        length(encryptStream)
+        stream = encryptStream;
     else 
         key = 0;
     end
+
     if encodeParam == 1 % 不卷积时单独处理
         alignNumber = bits - mod(length(stream), bits);
         if alignNumber ~= bits
