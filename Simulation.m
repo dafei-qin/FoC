@@ -18,6 +18,7 @@ for enr = enr_list;
     err = 0;
     tot = 0;
     en = 10^(enr/10);
+    
     %P_theo = 2/3*qfunc(sqrt(en*3*(1-2^-0.5)));
     % if(P_theo<5*10e-5)
         % break
