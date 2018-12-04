@@ -7,7 +7,7 @@
 %A test program. without Encryption, without Encryption.
 %
 M = 3;
-Rc= 1/3; 
+m = 3;
 N = 8001; %number of bits
 
 Pt_list = [];
@@ -27,8 +27,8 @@ for enr = enr_list;
     
     for (ep_cnt = 1:ep)
         message = randi(2,1,N)-1;
-        sstream = bits2syms(message,M,0,2);
-        res = syms2bits(WaveChannel(sstream,M,M,enr),M,0,2);
+        sstream = bits2syms(message,M,0,m);
+        res = syms2bits(WaveChannel(sstream,M,m,enr),M,0,m);
         res = res(1:N);%卷积码可能有残留尾巴
         err = err + sum(abs(res - message));  
         tot = tot + N;
